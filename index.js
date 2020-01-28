@@ -10,7 +10,7 @@ const INSTANCE_LOCATOR_ID = process.env.CHATKIT_INSTANCE_LOCATOR_ID;
 const CHATKIT_SECRET = process.env.CHATKIT_SECRET_KEY;
 
 const chatkit = new Chatkit.default({
-  instanceLocator: `v1:us1:${INSTANCE_LOCATOR_ID}`,
+  instanceLocator: INSTANCE_LOCATOR_ID,
   key: CHATKIT_SECRET
 });
 
@@ -24,8 +24,7 @@ app.post("/auth", (req, res) => {
     userId: user_id
   });
 
-  res.status(authData.status)
-     .send(authData.body);
+  res.status(authData.status).send(authData.body);
 });
 
 let users = [];
@@ -43,27 +42,25 @@ app.post("/user", async (req, res) => {
   // because this route depends on the users variable to be filled
   const { username } = req.body;
   try {
-    const user = users.find((usr) => usr.name == username);
+    const user = users.find(usr => usr.name == username);
     res.send({ user });
   } catch (get_user_err) {
     console.log("error getting user: ", get_user_err);
   }
 });
 
-
-app.post("/user/permissions", async(req, res) => {
+app.post("/user/permissions", async (req, res) => {
   const { room_id, user_id } = req.body;
   try {
     const roles = await chatkit.getUserRoles({ userId: user_id });
     const role = roles.find(role => role.room_id == room_id);
-    const permissions = (role) ? role.permissions : [];
+    const permissions = role ? role.permissions : [];
 
     res.send({ permissions });
   } catch (user_permissions_err) {
     console.log("error getting user permissions: ", user_permissions_err);
   }
 });
-
 
 app.post("/rooms", async (req, res) => {
   const { user_id } = req.body;
@@ -78,7 +75,7 @@ app.post("/rooms", async (req, res) => {
 });
 
 const PORT = 5000;
-app.listen(PORT, (err) => {
+app.listen(PORT, err => {
   if (err) {
     console.error(err);
   } else {
