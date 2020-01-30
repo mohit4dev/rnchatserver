@@ -68,9 +68,92 @@ app.post("/rooms", async (req, res) => {
     const rooms = await chatkit.getUserRooms({
       userId: user_id
     });
+    res.send({ total: rooms.length, rooms });
+  } catch (get_rooms_err) {
+    console.log("error getting rooms: ", get_rooms_err);
+  }
+});
+
+app.post("/user/create", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await chatkit.createUser({
+      id: email,
+      name: email
+    });
+    res.send({ user });
+  } catch (get_rooms_err) {
+    console.log("error getting rooms: ", get_rooms_err);
+  }
+});
+
+app.post("/room/create", async (req, res) => {
+  const { creatorId, name } = req.body;
+  try {
+    const rooms = await chatkit.createRoom({
+      creatorId,
+      name
+    });
     res.send({ rooms });
   } catch (get_rooms_err) {
     console.log("error getting rooms: ", get_rooms_err);
+  }
+});
+
+app.post("/user/check", async (req, res) => {
+  const { userId } = req.body;
+  let users = [];
+  try {
+    users = await chatkit.getUser({
+      id: userId
+    });
+
+    res.send({ success: true, users });
+  } catch (get_user_error) {
+    if (get_user_error.status === 404) {
+      res.send({ success: false });
+    }
+  }
+});
+
+app.post("/room/check", async (req, res) => {
+  const { name } = req.body;
+  let rooms = [];
+  try {
+    rooms = await chatkit.getRooms();
+
+    rooms.forEach(element => {
+      if (element.name === name) {
+        res.send({
+          success: true,
+          status: 200,
+          room: element
+        });
+      }
+    });
+
+    res.send({ success: false, status: 404 });
+  } catch (get_user_error) {
+    if (get_user_error.status === 404) {
+      res.send({ success: false });
+    }
+  }
+});
+
+app.post("/room/add/user", async (req, res) => {
+  const { roomId, userIds } = req.body;
+  let rooms = [];
+  try {
+    rooms = await chatkit.addUsersToRoom({
+      roomId,
+      userIds
+    });
+
+    res.send({ success: true, status: 404 });
+  } catch (get_user_error) {
+    if (get_user_error.status === 404) {
+      res.send({ success: false });
+    }
   }
 });
 
