@@ -149,10 +149,10 @@ app.post("/room/add/user", async (req, res) => {
       userIds
     });
 
-    res.send({ success: true, status: 404 });
+    res.send({ success: true, status: 200 });
   } catch (get_user_error) {
     if (get_user_error.status === 404) {
-      res.send({ success: false });
+      res.send({ success: false, get_user_err });
     }
   }
 });
