@@ -157,6 +157,22 @@ app.post("/room/add/user", async (req, res) => {
   }
 });
 
+app.post("/room/check/user", async (req, res) => {
+  const { roomId } = req.body;
+  let rooms = [];
+  try {
+    rooms = await chatkit.getRoom({
+      roomId
+    });
+
+    res.send({ success: true, status: 200, rooms });
+  } catch (get_user_error) {
+    if (get_user_error.status === 404) {
+      res.send({ success: false, get_user_error });
+    }
+  }
+});
+
 const PORT = 5000;
 app.listen(PORT, err => {
   if (err) {
